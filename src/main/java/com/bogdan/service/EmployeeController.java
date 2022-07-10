@@ -3,6 +3,11 @@ package com.bogdan.service;
 import com.bogdan.exception_handler.EmployeeNotFoundException;
 import com.bogdan.model.Employee;
 import com.bogdan.model.EmployeeDao;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
@@ -26,6 +31,14 @@ public class EmployeeController {
         return service.getAllEmployees();
     }
 
+    @Operation(summary = "Retourne un employée en utilisant son identifiant ")
+    @ApiResponses(value = {
+            @ApiResponse( responseCode = "200", description = "Employé trouvé",
+                    content = {
+                    @Content( mediaType = "application/json", schema = @Schema(implementation = Employee.class))
+            }),
+            @ApiResponse(responseCode = "400", description = "Identifiant invalide", content = @Content),
+            @ApiResponse(responseCode = "404", description = "Employé non trouvé", content = @Content) })
     @GetMapping(path = "/employees/{employeeId}")
     public Employee getEmployeeById(@PathVariable int employeeId) {
         Employee employee = service.getEmployeeById(employeeId);
