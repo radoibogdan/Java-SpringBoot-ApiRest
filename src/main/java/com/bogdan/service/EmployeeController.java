@@ -26,11 +26,13 @@ public class EmployeeController {
     @Autowired
     EmployeeDao service;
 
+    // ---------------- GET ALL ----------------
     @GetMapping("/employees")
     public List<Employee> getAll() {
         return service.getAllEmployees();
     }
 
+    // ---------------- GET BY ID ----------------
     @Operation(summary = "Retourne un employée en utilisant son identifiant ")
     @ApiResponses(value = {
             @ApiResponse( responseCode = "200", description = "Employé trouvé",
@@ -48,6 +50,7 @@ public class EmployeeController {
         return  employee;
     }
 
+    // ---------------- GET BY ID - HATEOAS ----------------
     @GetMapping(path = "hateoas/employees/{employeeId}")
     public EntityModel<Employee> getEmployeeByIdHateoas(@PathVariable int employeeId) {
         Employee employee = service.getEmployeeById(employeeId);
@@ -61,6 +64,7 @@ public class EmployeeController {
         return model;
     }
 
+    // ---------------- POST Create Employee ----------------
     // Enable Validation with @Valid
     @PostMapping("employees/user")
     public ResponseEntity<Object> saveEmployee(@Valid @RequestBody Employee emp) {
@@ -68,11 +72,12 @@ public class EmployeeController {
         // modify Header Localion URL to employees/user/4
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{employeeId}") // variable name for newEmployee.getEmployeeId
-                .buildAndExpand(newEmployee.getEmployeeId())
+                .buildAndExpand(newEmployee.getId())
                 .toUri();
         return ResponseEntity.created(uri).build(); // created = attach code 202 to response
     }
 
+    // ---------------- DELETE Employee ----------------
     @DeleteMapping("employees/delete/{employeeId}")
     public void deleteEmployee(@PathVariable int employeeId) {
         Employee employee = service.deleteEmployee(employeeId);
