@@ -38,11 +38,7 @@ public class Department {
         this.department = department;
     }
 
-    public Employee getEmployee() {
-        return employee;
-    }
+    public Employee getEmployee() { return employee; }
 
-    public void setEmployee(Employee employee) {
-        this.employee = employee;
-    }
+    public void setEmployee(Employee employee) { this.employee = employee; }
 }

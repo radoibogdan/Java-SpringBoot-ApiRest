@@ -30,22 +30,29 @@ public class EmployeeRepoController {
         return employeeRepository.findAll();
     }
 
-    // ---------------- GET BY ID ----------------
-    @GetMapping(path = "/jpa/employees/{employeeId}")
-    public EntityModel<Employee> getEmployeeByIdJpa(@PathVariable Long employeeId) {
+    // ---------------- GET BY ID - HATEOAS ----------------
+    @GetMapping("/jpa/employees/{employeeId}/hateoas")
+    public EntityModel<Employee> getEmployeeByIdJpaHateoas(@PathVariable Long employeeId) {
         Employee employee = employeeRepository.findById(employeeId).get();
-        if (null == employee) {
+        if (null == employee)
             throw new EmployeeNotFoundException("Employee Not Found.");
-        }
         EntityModel<Employee> model = EntityModel.of(employee);
-        Link link = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(this.getClass()).getAllJpa()).withRel("all-employees");
+        Link link = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(this.getClass()).getAllJpa()).withRel("all-employees-jpa");
         model.add(link);
         return model;
     }
 
+    // ---------------- GET BY ID - NO HATEOAS ----------------
+    @GetMapping("jpa/employees/{employeeId}")
+    public Employee getEmployeeByIdJpa(@PathVariable Long employeeId) {
+        Employee employee = employeeRepository.findById(employeeId).get();
+        if (null == employee) {
+            throw new EmployeeNotFoundException("Employee Not Found.");
+        }
+        return employee;
+    }
 
-    // ---------------- POST ----------------
-    // ---------------- POST Create Employee ----------------
+    // ---------------- POST - Create Employee ----------------
     // Enable Validation with @Valid
     @PostMapping("/jpa/employees")
     public ResponseEntity<Object> saveEmployeeJpa(@Valid @RequestBody Employee emp) {
@@ -58,8 +65,7 @@ public class EmployeeRepoController {
         return ResponseEntity.created(uri).build(); // created = attach code 202 to response
     }
 
-    // ---------------- POST ----------------
-    // ---------------- POST Create Departement for Employee ----------------
+    // ---------------- POST - Create Department for Employee----------------
     // Enable Validation with @Valid
     @PostMapping("/jpa/add-departement/employees/{empId}")
     public ResponseEntity<Object> saveDepartementForEmployeeJpa(@PathVariable Long empId, @RequestBody Department department) {
